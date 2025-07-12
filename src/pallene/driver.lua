@@ -19,6 +19,7 @@ local to_ir = require "pallene.to_ir"
 local uninitialized = require "pallene.uninitialized"
 local util = require "pallene.util"
 local translator = require "pallene.translator"
+local type_extractor = require "pallene.type_extractor"
 
 local driver = {}
 
@@ -188,7 +189,7 @@ local function compile_pln_to_ptf(input_ext, output_ext, input_file_name, base_n
     end
 
     local ptf_code
-    ptf_code, errs = translator.generate_types(prog_ast)
+    ptf_code, errs = type_extractor.generate_types(prog_ast)
     ptf_code = table.concat(ptf_code, "\n")
     if not ptf_code then
         return false, errs
