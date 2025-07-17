@@ -190,10 +190,11 @@ local function compile_pln_to_ptf(input_ext, output_ext, input_file_name, base_n
 
     local ptf_code
     ptf_code, errs = type_extractor.generate_types(prog_ast)
-    ptf_code = table.concat(ptf_code, "\n")
     if not ptf_code then
         return false, errs
     end
+    table.insert(ptf_code, "")
+    ptf_code = table.concat(ptf_code, "\n")
 
     assert(util.set_file_contents(base_name .. "." .. output_ext, ptf_code))
     return true, {}
