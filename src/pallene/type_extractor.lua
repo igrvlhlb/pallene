@@ -83,24 +83,9 @@ local function typeof_tls(node, typedefs)
             elseif stat._tag == "ast.Stat.Functions" then
                 local funcs = stat.funcs
                 for _, func in ipairs(funcs) do
-                    if not func.module then goto FUN_NOT_EXPORTED end
-                    local name = func.name
-                    local type = func._type
-                    local ret_types = func.ret_types
-                    local fargs = func.value.arg_decls
-                    local arg_strs = {}
-                    local ret_strs = {}
-                    for _, arg in ipairs(fargs) do
-                        table.insert(arg_strs, arg.name .. ': ' .. typestr(arg.type))
+                    if func.module then 
+                        table.insert(typedefs, string.format("%s: %s", func.name, typestr(func._type)))
                     end
-                    for _, ret_type in ipairs(ret_types) do
-                        table.insert(ret_strs, typestr(ret_type))
-                    end
-                    local ret_str = table.concat(ret_strs, ", ")
-                    local arg_str = table.concat(arg_strs, ", ")
-                    ret_str = (#ret_types > 1) and '(' .. ret_str .. ')' or ret_str
-                    table.insert(typedefs, string.format("%s: (%s) -> %s", name, arg_str, ret_str))
-                    ::FUN_NOT_EXPORTED::
                 end
             elseif stat._tag == "ast.Stat.Decl" then
                 -- do nothing
