@@ -189,7 +189,7 @@ local function compile_pln_to_ptf(input_ext, output_ext, input_file_name, base_n
     end
 
     local ptf_code
-    ptf_code, errs = type_extractor.generate_types(prog_ast)
+    ptf_code, errs = type_extractor.generate_type_declarations(prog_ast)
     if not ptf_code then
         return false, errs
     end
