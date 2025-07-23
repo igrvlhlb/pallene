@@ -307,6 +307,83 @@ describe("Type extractor", function()
         
         assert_type_declarations(source, expected)
     end)
+
+    it("should not expand type aliases in module function parameters (1)", function()
+        local source = [[
+            local m: module = {}
+
+            typealias MappingI = (integer, any) -> any
+
+            function m.imap(f: MappingI, arr: {any}): {any}
+                local result: {any} = {}
+                for i = 1, #arr do
+                    result[i] = f(i, arr[i])
+                end
+                return result
+            end
+
+            return m
+        ]]
+        
+        local expected = {
+            "typealias MappingI = (integer, any) -> any",
+            "imap: (MappingI, {any}) -> {any}",
+        }
+        
+        assert_type_declarations(source, expected)
+    end)
+
+    it("should not expand type aliases in module function parameters (2)", function()
+        local source = [[
+            local m: module = {}
+
+            typealias MappingI = (integer, any) -> any
+
+            local function imap(f: MappingI, arr: {any}): {any}
+                local result: {any} = {}
+                for i = 1, #arr do
+                    result[i] = f(i, arr[i])
+                end
+                return result
+            end
+            m.imap = imap
+
+            return m
+        ]]
+        
+        local expected = {
+            "typealias MappingI = (integer, any) -> any",
+            "imap: (MappingI, {any}) -> {any}",
+        }
+        
+        assert_type_declarations(source, expected)
+    end)
+
+    it("should not expand type aliases in as expressions", function()
+        local source = [[
+            local m: module = {}
+
+            typealias MappingI = (integer, any) -> any
+
+            local function imap(f: MappingI, arr: {any}): {any}
+                local result: {any} = {}
+                for i = 1, #arr do
+                    result[i] = f(i, arr[i])
+                end
+                return result
+            end
+            m.imap = imap as (MappingI, {any}) -> {any}
+
+            return m
+        ]]
+        
+        local expected = {
+            "typealias MappingI = (integer, any) -> any",
+            "imap: (MappingI, {any}) -> {any}",
+        }
+        
+        assert_type_declarations(source, expected)
+    end)
     
 end)
 
