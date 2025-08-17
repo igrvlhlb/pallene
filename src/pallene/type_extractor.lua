@@ -125,10 +125,19 @@ local function typeof_tls(node, typedefs)
         for _, stat in ipairs(stats) do
             if stat._tag == "ast.Stat.Assign" then
                 local vars = stat.vars
-                for _, var in ipairs(vars) do
+                for i, var in ipairs(vars) do
                     if var._tag == "ast.Var.Name" then
                         local name = var.name
                         local type = var._type
+                        if type._tag == "types.T.Function" and 
+                           stat.exps[i]._tag == "ast.Exp.Cast" and 
+                           stat.exps[i].exp._tag == "ast.Exp.Var" and 
+                           stat.exps[i].exp.var._tag == "ast.Var.Name" 
+                        then
+                            type = create_function_type(stat.exps[i].exp.var._def.func)
+                        elseif type._tag == "types.T.Function" and stat.exps[i]._tag == "ast.Exp.Var" and stat.exps[i].var._tag == "ast.Var.Name" then
+                            type = create_function_type(stat.exps[i].var._def.func)
+                        end
                         table.insert(typedefs, string.format("%s: %s", name, format_type(type)))
                     end
                 end
