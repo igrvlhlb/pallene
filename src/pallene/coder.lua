@@ -1732,6 +1732,7 @@ end
 
 gen_cmd["ForStep"] = function(self, args)
     local typ = args.func.vars[args.cmd.dst_i].typ
+
     local macro
     if     typ._tag == "types.T.Integer" then
         macro = "PALLENE_INT_FOR_STEP"
