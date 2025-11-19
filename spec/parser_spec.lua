@@ -905,4 +905,50 @@ describe("Parser /", function()
         end)
 
     end)
+
+    describe("Type declaration file", function()
+        it("It should parse", function()
+            print("---- Type Declaration File Parser Test ----")
+
+            local tdf = [[
+                typealias A = integer
+                record B
+                    x: A
+                end
+                f: (A) -> B
+                g: (A, (A) -> B) -> (B, A)
+                typealias C = { x: A, y: B }
+            ]]
+            
+            print("Type Declaration File Content:\n"..tdf.."\n")
+            
+            local parser = require 'pallene.parser'
+            local Lexer = require 'pallene.lexer'
+            
+            local lexer = Lexer.new("__test__.ptf", tdf)
+
+            print("Lexer created.")
+            print(lexer)
+
+            local ast = parser.parse(lexer)
+            print("Parser created.")
+
+            assert(ast)
+            assert(ast._tag == "ast.TypeFile.Decls")
+
+            local tu = require 'tableutils'
+            local ast_printer = require 'pallene.ast_printer'
+            -- print(ast_printer.pretty_print(ast, "__test__.ptf"))
+            -- print(tu.ptable(ast))
+
+            local typechecker = require 'pallene.typechecker'
+
+            prog_ast, errs = typechecker.check(ast)
+            print(errs)
+            assert(prog_ast)
+            print(ast_printer.pretty_print(ast, "__test__.ptf"))
+
+        end)
+    end)
+
 end)
